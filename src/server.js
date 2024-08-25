@@ -7,8 +7,9 @@ import cors from "cors";
 // const PORT = Number(process.env.PORT);
 
 import { env } from "./utils/env.js";
+// console.log(env.length);
 
-const PORT = env("PORT", "3000");
+const PORT = env("PORT", "8080");
 
 export const startServer = () => {
   const app = express();
@@ -34,7 +35,7 @@ export const startServer = () => {
   });
 
   app.use((err, req, res, next) => {
-    app.status(500).json({
+    res.status(500).json({
       message: "Something went wrong",
       err: err.message,
       errName: err.name,
