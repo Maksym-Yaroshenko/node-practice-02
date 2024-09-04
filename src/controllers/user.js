@@ -1,61 +1,24 @@
 import mongoose from "mongoose";
 import { UserModels, SessionsModels } from "../models/userModel.js";
-import { userModelsFind, UserModelsFindById } from "../services/user.js";
+import {
+  CreatedUser,
+  getAllUser,
+  UserModelsFindById,
+} from "../services/user.js";
 import createHttpError from "http-errors";
-// export const fullNameUsers = async (req, res, next) => {
-//   try {
-//     const users = await UserModels.find();
-//     // const sessions = await SessionsModels.find();
-
-//     console.log(sessions);
-//     res.send({
-//       status: 200,
-//       message: "Successfully found users!",
-//       data_users: users,
-//       //   data_sessions: sessions,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Something went wrong");
-//   }
-// };
-
-// export const oneNameUser = async (req, res, next) => {
-//   try {
-//     const { userId } = req.params;
-
-//     if (!mongoose.Types.ObjectId.isValid(userId)) {
-//       return res.status(400).send({ message: "Invalid contact ID format" });
-//     }
-
-//     const oneUser = await UserModels.findById(userId);
-//     // console.log(oneUser);
-
-//     // if (oneUser === null) {
-//     //   return res.status(404).send({
-//     //     message: "Contact not found",
-//     //   });
-//     // }
-
-//     if (!oneUser) {
-//       return next(new Error("Student not found"));
-//     }
-
-//     res.send({
-//       status: 200,
-//       message: `Successfully found contact with id ${userId}!`,
-//       data: oneUser,
-//     });
-//     // next();
-//   } catch (error) {
-//     // console.error(error);
-//     // res.status(500).send("Something went wrong");
-//     next(error);
-//   }
-// };
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
 
 export const fullNameUsers = async (req, res, next) => {
-  const user = await userModelsFind();
+  const { page, perPage } = parsePaginationParams(req.query);
+
+  const { sortOrder, sortBy } = parseSortParams(req.query);
+
+  const user = await getAllUser(page, perPage, sortOrder, sortBy);
+
+  if (!user.hasNextPage) {
+    return next(createHttpError(404, "Page Not Found"));
+  }
 
   res.send({
     status: 200,
@@ -68,21 +31,12 @@ export const oneNameUser = async (req, res, next) => {
   const { userId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
-    // return res.status(400).send({ message: "Invalid contact ID format" });
-    throw createHttpError(500, "Invalid contact ID format");
+    return next(createHttpError(500, "Invalid contact ID format"));
   }
 
   const oneUser = await UserModelsFindById(userId);
-  // console.log(oneUser);
-
-  // if (oneUser === null) {
-  //   return res.status(404).send({
-  //     message: "Contact not found",
-  //   });
-  // }
 
   if (!oneUser) {
-    // return next(new Error("Student not found"));
     throw createHttpError(404, "User not found");
   }
 
@@ -94,4 +48,14 @@ export const oneNameUser = async (req, res, next) => {
   // next();
 };
 
-export const createUserController = async (req, res, next) => {};
+export const createUserController = async (req, res, next) => {
+  const user = await CreatedUser(req.body);
+
+  console.log(user);
+
+  res.status(201).send({
+    status: 201,
+    message: "Successfully created a contact!",
+    data: user,
+  });
+};

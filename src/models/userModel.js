@@ -21,7 +21,10 @@ const usersSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
 const sessionsSchema = new mongoose.Schema({

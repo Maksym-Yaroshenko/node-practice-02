@@ -11,6 +11,7 @@ import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 // const PORT = Number(process.env.PORT);
 
 import { env } from "./utils/env.js";
+import { parseNumber } from "./utils/parseNumber.js";
 // console.log(env.length);
 
 const PORT = env("PORT", "8080");
@@ -38,7 +39,11 @@ export const startServer = () => {
   app.get("/", (req, res, next) => {
     res.json({ message: "Hello World!" });
     const body = req.body;
-    console.log(body);
+    // console.log(body);
+
+    const a = parseNumber("10", "15");
+
+    // console.log(a);
   });
 
   // app.get("/users", fullNameUsers);
