@@ -5,7 +5,7 @@ const PASSWORD_REGEX = new RegExp(
 );
 
 export const createUserSchema = Joi.object({
-  name: Joi.string().min(3).max(30).required(),
+  name: Joi.string().min(3).max(30).trim().required(),
   email: Joi.string().email().required(),
   password: Joi.string()
     // .pattern(PASSWORD_REGEX)

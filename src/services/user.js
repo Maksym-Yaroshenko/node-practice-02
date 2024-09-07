@@ -30,8 +30,12 @@ export const getAllUser = async (
 
   // ------------------------------------------------------------------------
 
-  const [usersCount, user] = await Promise.all([
-    UserModels.find().merge(usersQuery).countDocuments(),
+  console.log({
+    [sortBy]: sortOrder,
+  });
+
+  const [usersCount, users] = await Promise.all([
+    UserModels.countDocuments({}),
     usersQuery
       .skip(skip)
       .limit(limit)
@@ -39,11 +43,12 @@ export const getAllUser = async (
       .exec(),
   ]);
 
+  // console.log(usersCount);
   const paginationData = calculatePaginationData(usersCount, page, perPage);
   // console.log(usersCount, page, perPage);
 
   return {
-    data: user,
+    data: users,
     ...paginationData,
   };
 };
